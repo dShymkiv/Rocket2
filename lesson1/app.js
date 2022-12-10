@@ -19,7 +19,6 @@ async function moveByTheGender (dir) {
     }
   }catch (err) {
     return console.log(err);
-
   }
 }
 
