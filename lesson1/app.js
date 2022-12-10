@@ -4,7 +4,7 @@ const path = require('node:path');
 const boys = path.join(__dirname, 'boys');
 const girls = path.join(__dirname, 'girls');
 
-async function moveByTheGender (dir) {
+async function moveByTheGender(dir) {
   try {
     const files = await fs.readdir(dir);
 
@@ -17,7 +17,7 @@ async function moveByTheGender (dir) {
         await fs.rename(path.join(dir, file), path.join(boys, file));
       }
     }
-  }catch (err) {
+  } catch (err) {
     return console.log(err);
   }
 }
