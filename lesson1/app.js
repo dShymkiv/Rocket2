@@ -22,5 +22,5 @@ async function moveByTheGender(dir) {
   }
 }
 
-moveByTheGender(boys);
-moveByTheGender(girls);
+// moveByTheGender(boys);
+// moveByTheGender(girls);
