@@ -20,7 +20,7 @@ const getUsers = async (req, res) => {
 
 const getUserById = async (req, res) => {
   try {
-    const user = await findUserById(+req.params.userId);
+    const user = await findUserById(req.params.userId);
 
     res.json(user);
   } catch (e) {
@@ -44,9 +44,9 @@ const createUser = async (req, res) => {
 
 const deleteUser = async (req, res) => {
   try {
-    const response = await removeUser(+req.params.userId);
+    await removeUser(req.params.userId);
 
-    res.json({ message: response.message });
+    res.status(204);
   } catch (e) {
     res.status(400).json({
       message: e.message
@@ -56,7 +56,7 @@ const deleteUser = async (req, res) => {
 
 const updateUserById = async (req, res) => {
   try {
-    const updatedUser = await updateUser(+req.params.userId, req.body);
+    const updatedUser = await updateUser(req.params.userId, req.body);
 
     res.json(updatedUser);
   } catch (e) {

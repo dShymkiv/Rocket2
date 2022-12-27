@@ -1,4 +1,4 @@
-const fs = require('fs').promises;
+const fs = require('node:fs').promises;
 const path = require('node:path');
 
 const usersPath = path.join(process.cwd(), "db", "users.json");
@@ -17,7 +17,7 @@ async function findUserById(userId) {
   const users = await usersList();
 
   for (const user of users) {
-    if (user.id === userId) {
+    if (user.id === +userId) {
       return user;
     }
   }
@@ -29,13 +29,14 @@ async function addUser({name, email, phone}) {
   const lastUser = users[users.length - 1];
 
   const newUser = {
-    id: (+lastUser.id + 1),
+    id: (lastUser.id + 1),
     name,
     email,
     phone,
   };
 
   const isUserNameExists = users.find(user => user.name === name);
+
   if (isUserNameExists) {
     throw new Error ("User with this name already exists");
   }
@@ -47,31 +48,29 @@ async function addUser({name, email, phone}) {
 }
 
 async function removeUser(userId) {
-  await findUserById(userId); // method includes check on existing user
+  await findUserById(+userId); // method includes check on existing user
 
   const users = await usersList();
 
   for (let i = 0; i < users.length; i++) {
     const user = users[i];
 
-    if (user.id === userId) {
+    if (user.id === +userId) {
       users.splice(i, 1);
       i--;
     }
   }
   await fs.writeFile(usersPath, JSON.stringify(users, null, 2));
-
-  return { message: "Contact deleted" };
 }
 
 async function updateUser(userId, body) {
-  await findUserById(userId); // method includes check on existing user
+  await findUserById(+userId); // method includes check on existing user
 
   const users = await usersList();
   let updateUser;
 
   for (let i = 0; i < users.length ; i++) {
-    if (users[i].id === userId) {
+    if (users[i].id === +userId) {
       if (body.name?.length) {
         users[i].name = body.name;
       }
