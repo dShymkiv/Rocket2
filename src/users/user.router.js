@@ -12,11 +12,11 @@ const mdlwr = require('../users/user.middleware');
 const router = express.Router();
 
 router.get('/', getUsers);
-router.post('/', createUser);
+router.post('/', mdlwr.checkIsEmailExist, mdlwr.checkValidData, createUser);
 
 router.use('/:userId', mdlwr.checkIsUserExist);
 router.get('/:userId', getUserById);
-router.put('/:userId', updateUserById);
+router.put('/:userId', mdlwr.checkIsEmailExist, mdlwr.checkValidData, updateUserById);
 router.delete('/:userId', deleteUser);
 
 module.exports = router;

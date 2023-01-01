@@ -1,13 +1,15 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const path = require('node:path');
+
 require('dotenv').config({
   path: path.join(__dirname, 'env', `.env.${process.env.NODE_ENV || 'local'}`)
 }); // app.js doesn't see .env.local - they must be on the same level or need to write the path to .env.local
 
-const ApiError = require('./errors/ApiError');
 const configs = require('./configs/config');
 const router = require('./src/router');
+const { SERVER_ERROR } = require('./errors/error.codes');
+const { NotFound } = require('./errors/ApiError');
 
 const app = express();
 mongoose.set('debug', true);
@@ -35,13 +37,13 @@ app.listen(configs.PORT, async () => {
 });
 
 function _notFoundError(req, res, next) {
-  next(new ApiError('Route not found', 404));
+  next(new NotFound('Route not found'));
 }
 
 // eslint-disable-next-line no-unused-vars
 function mainErrorHandler(err, req, res, next) {
   res
-    .status(err.status || 500)
+    .status(err.status || SERVER_ERROR)
     .json({
       message: err.message || 'Unknown error'
     });

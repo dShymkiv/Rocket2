@@ -6,7 +6,8 @@ const UserSchema = new Schema({
   lastName: { type: String, trim: true, default: '' },
   email: { type: String, trim: true, lowercase: true, require: true, unique: true },
   age: { type: Number },
-  role: { type: String, enum: Object.values(rolesEnum), default: rolesEnum.USER }
+  role: { type: String, enum: Object.values(rolesEnum), default: rolesEnum.USER },
+  password: { type: String, require: true}
 },
 {
   timestamps: true,
