@@ -8,6 +8,10 @@ const findUserById = (userId) => {
   return User.findById(userId);
 };
 
+const findUserByEmail = (email) => {
+  return User.find({email});
+};
+
 const createUser = (user) => {
   return User.create(user);
 };
@@ -41,4 +45,5 @@ module.exports = {
   createUser,
   deleteUser,
   updateUser,
+  findUserByEmail,
 };

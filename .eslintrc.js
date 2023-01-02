@@ -17,7 +17,7 @@ module.exports = {
       'error',
       { minItems: 2 },
     ],
-    'arrow-body-style': 'error',
+    // 'arrow-body-style': 'error',
     'block-scoped-var': 'error',
     semi: "error",
     complexity: 'error',
