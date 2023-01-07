@@ -7,7 +7,7 @@ const UserSchema = new Schema({
   email: { type: String, trim: true, lowercase: true, require: true, unique: true },
   age: { type: Number },
   role: { type: String, enum: Object.values(rolesEnum), default: rolesEnum.USER },
-  password: { type: String, require: true}
+  password: { type: String, require: true, min: 8 }
 },
 {
   timestamps: true,

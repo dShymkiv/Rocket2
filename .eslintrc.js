@@ -9,14 +9,14 @@ module.exports = {
     ecmaVersion: "latest"
   },
   rules: {
-    'array-bracket-newline': [
-      'error',
-      { minItems: 2 },
-    ],
-    'array-element-newline': [
-      'error',
-      { minItems: 2 },
-    ],
+    // 'array-bracket-newline': [
+    //   'error',
+    //   { minItems: 2 },
+    // ],
+    // 'array-element-newline': [
+    //   'error',
+    //   { minItems: 2 },
+    // ],
     // 'arrow-body-style': 'error',
     'block-scoped-var': 'error',
     semi: "error",

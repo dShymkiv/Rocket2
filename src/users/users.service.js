@@ -1,5 +1,5 @@
 const User = require('../../db/User');
-const { buildFilterQuery } = require('./user.util');
+const { buildFilterQuery, buildSortQuery } = require('./user.utils');
 
 /**
  *
@@ -7,16 +7,18 @@ const { buildFilterQuery } = require('./user.util');
  * @returns {Promise<Array<User>>}
  */
 const getUsers = async (query = {}) => {
-  const { page = 1, perPage = 5, sortBy, order = 'ASC', ...filterQuery } = query;
+  const { page = 1, perPage = 5, sortBy = '_id', order = 'ASC', ...filterQuery } = query;
   const skip = (page - 1) * perPage;
 
   const searchedItems = buildFilterQuery(filterQuery);
 
+  const sortQuery = buildSortQuery(sortBy, order);
+
   const users = await User
     .find(searchedItems)
     .limit(perPage)
-    .skip(skip);
-    // .sort({ [sortBy]: [order] });
+    .skip(skip)
+    .sort(sortQuery);
 
   const total = await User.count(searchedItems);
 
