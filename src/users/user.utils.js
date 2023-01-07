@@ -1,3 +1,5 @@
+const { ASC, DESC } = require('../../configs/sortOrder.enum');
+
 const buildFilterQuery = (query = {}) => {
   const filterQuery = {};
   const ageFilter = {};
@@ -39,7 +41,18 @@ const buildFilterQuery = (query = {}) => {
   return filterQuery;
 };
 
+const buildSortQuery = (sortBy, order) => {
+  const sortingOrder = order === 'ASC' ? ASC : DESC;
+
+  if(sortBy === 'createdDate') {
+    return { '_id': sortingOrder };
+  }
+
+  return { [sortBy]: sortingOrder };
+};
+
 module.exports = {
   buildFilterQuery,
+  buildSortQuery
 };
 
