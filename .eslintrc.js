@@ -23,7 +23,7 @@ module.exports = {
     complexity: 'error',
     'constructor-super': 'error',
     camelcase: 'off',
-    curly: 'warn',
+    curly: 'off',
     'default-case': 'off',
     'no-case-declarations': 'off',
     'dot-notation': 'error',
