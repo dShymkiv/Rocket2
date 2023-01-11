@@ -7,7 +7,7 @@ require('dotenv').config({
 }); // app.js doesn't see .env.local - they must be on the same level or need to write the path to .env.local
 
 const configs = require('./configs/config');
-const router = require('./src/router');
+const router = require('./src/api.router');
 const { SERVER_ERROR } = require('./errors/error.codes');
 const { NotFound } = require('./errors/ApiError');
 
@@ -31,6 +31,7 @@ app.listen(configs.PORT, async () => {
     }
   } catch (err) {
     if (err) console.log(err);
+
     process.exit(1);
   }
   console.log(`PORT: ${configs.PORT}`);

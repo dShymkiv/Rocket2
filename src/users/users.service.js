@@ -1,13 +1,14 @@
 const User = require('../../db/User');
 const { buildFilterQuery, buildSortQuery } = require('./user.utils');
+const oauthService = require('../../services/OAuth.service');
 
 /**
- *
- * @param query
+ * JSDoc
+ * @param query {Object}
  * @returns {Promise<Array<User>>}
  */
 const getUsers = async (query = {}) => {
-  const { page = 1, perPage = 5, sortBy = '_id', order = 'ASC', ...filterQuery } = query;
+  const { page, perPage, sortBy, order, ...filterQuery } = query;
   const skip = (page - 1) * perPage;
 
   const searchedItems = buildFilterQuery(filterQuery);
@@ -34,27 +35,40 @@ const getUsers = async (query = {}) => {
 //   return User.find();
 // };
 
-const findUserById = (userId) => {
-  return User.findById(userId);
+/**
+ *
+ * @param searchObj {Object}
+ * @returns {Promise<User>}
+ */
+const findUserByParams = (searchObj) => {
+  return User.findOne(searchObj);
+  // return User.findOne(searchObj).select('_id'); // _id always selected;
+  // .select('firstName age email'); selected fields add with spaces => return _id, firstName, age, email
 };
 
-const findUserByEmail = (email) => {
-  return User.find({email});
+/**
+ *
+ * @param user {Object}
+ * @returns {Promise<User>}
+ */
+const createUser = async (user) => {
+  const hashPassword = await oauthService.hashPassword(user.password);
+
+  return User.create({ ...user, password: hashPassword });
 };
 
-const createUser = (user) => {
-  return User.create(user);
-};
-
+/**
+ *
+ * @param userId {String}
+ */
 const deleteUser = (userId) => {
   return User.deleteOne(userId);
 };
 
 /**
- * JSDoc
  *
- * @param user
- * @param fieldsToChange
+ * @param user {Object}
+ * @param fieldsToChange {Object}
  * @returns {Promise<User>}
  */
 const updateUser = async (user, fieldsToChange) => {
@@ -67,7 +81,7 @@ const updateUser = async (user, fieldsToChange) => {
 
   await User.findByIdAndUpdate(user._id, user);
 
-  return findUserById(user._id);
+  return findUserByParams({ _id: user._id} );
 };
 
 module.exports = {
@@ -75,5 +89,5 @@ module.exports = {
   createUser,
   deleteUser,
   updateUser,
-  findUserByEmail,
+  findUserByParams,
 };

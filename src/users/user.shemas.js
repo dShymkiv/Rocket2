@@ -1,6 +1,26 @@
 const Joi = require('joi');
 
-const regExp = require('../../configs/regexp.enum');
+const regExp = require('../../configs/enums/regexp.enum');
+const { ID, FIRST_NAME, LAST_NAME, AGE, EMAIL, ROLE, CREATED_AT, UPDATED_AT } = require('../../configs/enums/sortFields.enum');
+
+const getAllUsersSchema = {
+  query: Joi.object().keys({
+    page: Joi.string().alphanum().trim().default('1'),
+    perPage: Joi.number().integer().default(5),
+    sortBy: Joi.string()
+      .valid(ID, FIRST_NAME, LAST_NAME, EMAIL, AGE, ROLE, CREATED_AT, UPDATED_AT)
+      .default('_id')
+      .error(new Error("Please enter a valid 'sortBy' parameter")),
+    order: Joi.string()
+      .valid('ASC', 'DESC')
+      .default('ASC')
+      .error(new Error("Please enter a valid 'order' parameter")),
+    ageGte: Joi.number(),
+    ageLte: Joi.number(),
+    dateGte: Joi.string().alphanum().regex(regExp.DATE),
+    dateLte: Joi.string().alphanum().regex(regExp.DATE),
+  }),
+};
 
 const createUserSchema = {
   body: Joi.object().keys({
@@ -31,7 +51,17 @@ const updateUserSchema = {
   }),
 };
 
+const userIdParamSchema = {
+  params: Joi.object()
+    .keys({
+      userId: Joi.string().alphanum().required(),
+    })
+    .required(),
+};
+
 module.exports = {
+  getAllUsersSchema,
   createUserSchema,
   updateUserSchema,
+  userIdParamSchema
 };

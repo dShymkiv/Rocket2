@@ -1,24 +1,32 @@
-const express = require('express');
+const router = require('express').Router();
 
-const {
-  getUsers,
-  getUserById,
-  updateUserById,
-  createUser,
-  deleteUser,
-} = require('./users.controller');
+const controller = require('./users.controller');
 const mdlwr = require('./user.middlewares');
+const authMdlwr = require('../auth/auth.middlewares');
 const { validate } = require('../mainValidateFunction');
 const schema = require('./user.shemas');
 
-const router = express.Router();
+router.get('/', validate(schema.getAllUsersSchema), controller.getUsers);
+router.post('/',
+  validate(schema.createUserSchema),
+  mdlwr.checkIsUserExistsDynamically('email', 'body'),
+  controller.createUser
+);
 
-router.get('/', getUsers);
-router.post('/', validate(schema.createUserSchema), mdlwr.checkIsEmailExist, createUser);
+router.use('/:userId',
+  validate(schema.userIdParamSchema),
+  mdlwr.getUserDynamically('userId', 'params', '_id'),
+);
 
-router.use('/:userId', mdlwr.checkIsUserExist);
-router.get('/:userId', getUserById);
-router.put('/:userId', validate(schema.updateUserSchema), mdlwr.checkIsEmailExist, updateUserById);
-router.delete('/:userId', deleteUser);
+router.get('/:userId', controller.getUserById);
+router.put(
+  '/:userId',
+  validate(schema.updateUserSchema),
+  mdlwr.checkIsUserExistsDynamically('email', 'body'),
+  controller.updateUserById
+);
+router.delete('/:userId', controller.deleteUser);
+
+router.get('/profile',authMdlwr.validateAccessTokenforUserProfile, controller.getUserProfile);
 
 module.exports = router;

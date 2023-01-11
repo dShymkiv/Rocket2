@@ -1,4 +1,4 @@
-const { ASC, DESC } = require('../../configs/sortOrder.enum');
+const { ASC, DESC } = require('../../configs/enums/sortOrder.enum');
 
 const buildFilterQuery = (query = {}) => {
   const filterQuery = {};

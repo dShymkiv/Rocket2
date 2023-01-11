@@ -1,10 +1,11 @@
-const User = require('../../db/User');
 const { NotFound, BadRequest } = require('../../errors/ApiError');
-const { findUserByEmail } = require('./users.service');
+const userService = require('./users.service');
 
-const checkIsUserExist = async (req, res, next) => {
+const getUserDynamically = (param, from, dbField = param) => async (req, res, next) => {
   try {
-    const user = await User.findById(req.params.userId);
+    const searchedField = req[from][param];
+
+    const user = await userService.findUserByParams({ [dbField]: searchedField });
 
     if (!user) {
       throw new NotFound('User not found');
@@ -18,15 +19,17 @@ const checkIsUserExist = async (req, res, next) => {
   }
 };
 
-const checkIsEmailExist = async (req, res, next) => {
+const checkIsUserExistsDynamically = (param, from, dbField = param) => async (req, res, next) => {
   try {
-    if (req.body?.email) {
-      const user = await findUserByEmail(req.body.email);
+    const searchedField = req[from][param];
 
-      if (user[0]?.email === req.body?.email) {
-        throw new BadRequest('User with this email already exists');
-      }
+    const user = await userService.findUserByParams({ [dbField]: searchedField });
+
+    if (user) {
+      throw new BadRequest(`User with such ${param} already exists`);
     }
+
+    req.user = user;
 
     next();
   } catch (e) {
@@ -35,6 +38,6 @@ const checkIsEmailExist = async (req, res, next) => {
 };
 
 module.exports = {
-  checkIsUserExist,
-  checkIsEmailExist,
+  getUserDynamically,
+  checkIsUserExistsDynamically,
 };
