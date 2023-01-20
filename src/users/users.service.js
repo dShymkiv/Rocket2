@@ -5,7 +5,7 @@ const oauthService = require('../../services/OAuth.service');
 /**
  * JSDoc
  * @param query {Object}
- * @returns {Promise<Array<User>>}
+ * @returns {Promise<data: Array<User>, page: Number, perPage: Number, total: Number>}
  */
 const getUsers = async (query = {}) => {
   const { page, perPage, sortBy, order, ...filterQuery } = query;
@@ -41,7 +41,8 @@ const getUsers = async (query = {}) => {
  * @returns {Promise<User>}
  */
 const findUserByParams = (searchObj) => {
-  return User.findOne(searchObj);
+  return User.findOne(searchObj).select('+password');
+
   // return User.findOne(searchObj).select('_id'); // _id always selected;
   // .select('firstName age email'); selected fields add with spaces => return _id, firstName, age, email
 };
@@ -69,7 +70,7 @@ const deleteUser = (userId) => {
  *
  * @param user {Object}
  * @param fieldsToChange {Object}
- * @returns {Promise<User>}
+ * @returns {Promise<Partial<User>>}
  */
 const updateUser = async (user, fieldsToChange) => {
   user.firstName = fieldsToChange.firstName?.length ? fieldsToChange.firstName : user.firstName;

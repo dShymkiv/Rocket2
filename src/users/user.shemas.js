@@ -37,7 +37,7 @@ const createUserSchema = {
 const updateUserSchema = {
   params: Joi.object()
     .keys({
-      userId: Joi.string().alphanum().required(),
+      userId: Joi.string().alphanum().regex(regExp.OBJECT_ID).required(),
     })
     .required(),
 
@@ -54,7 +54,7 @@ const updateUserSchema = {
 const userIdParamSchema = {
   params: Joi.object()
     .keys({
-      userId: Joi.string().alphanum().required(),
+      userId: Joi.string().alphanum().regex(regExp.OBJECT_ID).required(),
     })
     .required(),
 };

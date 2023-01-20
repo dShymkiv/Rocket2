@@ -13,7 +13,7 @@ const getUsers = async (req, res, next) => {
 
 const getUserById = (req, res, next) => {
   try {
-    res.json(req.user);
+    res.json(req.locals.user);
   } catch (e) {
     next(e);
   }
@@ -49,11 +49,10 @@ const updateUserById = async (req, res, next) => {
   }
 };
 
-const getUserProfile = async (req, res, next) => {
+const getUserProfile = (req, res, next) => {
   try {
-    const updatedUser = await userService.updateUser(req.user, req.body);
 
-    res.json(updatedUser);
+    res.json(req.user);
   } catch (e) {
     next(e);
   }

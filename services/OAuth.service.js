@@ -24,13 +24,11 @@ const generateAccessTokenPair = (encodeData = {}) => {
   };
 };
 
-const validateToken = () => {
-
-};
-
-const validateAccessToken = (accessToken = '') => {
+const validateToken = (token = '', tokenType = "accessToken") => {
   try {
-    return jwt.verify(accessToken, config.ACCESS_TOKEN_SECRET);
+    tokenType = tokenType === "accessToken" ? config.ACCESS_TOKEN_SECRET : config.REFRESH_TOKEN_SECRET;
+
+    return jwt.verify(token, tokenType);
   } catch (e) {
     throw new Unauthorized(e.message || 'Invalid token');
     // for not valid token throw only 401 Error -> UNAUTHORIZED
@@ -42,5 +40,4 @@ module.exports = {
   checkPasswords,
   generateAccessTokenPair,
   validateToken,
-  validateAccessToken
 };

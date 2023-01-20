@@ -11,7 +11,9 @@ const getUserDynamically = (param, from, dbField = param) => async (req, res, ne
       throw new NotFound('User not found');
     }
 
-    req.user = user;
+    // залогінений юзер буде у req.user, а юзер який шукається по id у req.locals ( може бути будь яка назва, зазвичай locals)
+    // щоб юзери не перетирались між собою
+    req.locals = { ...req.locals, user };
 
     next();
   } catch (e) {

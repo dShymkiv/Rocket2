@@ -1,5 +1,6 @@
 const service = require('./auth.service');
 const oauthService = require('../../services/OAuth.service');
+const { NO_CONTENT } = require('../../errors/error.codes');
 
 // By default, Mongoose queries return an instance of the Mongoose Document class.
 // Documents are much heavier than vanilla JavaScript objects, because they have a => vanilla JavaScript - JS without libraries
@@ -25,18 +26,14 @@ const oauthService = require('../../services/OAuth.service');
 
 const loginUser = async (req, res, next) => {
   try {
-    const user = req.user.toObject();
-
-    console.log(user);
-
-    console.log(user.password, 'user');
-    console.log(req.body.password, "db");
-    console.log(user._id, "id");
+    // const user = req.user.toObject();
+    const user = req.locals.user;
 
     await oauthService.checkPasswords(user.password, req.body.password);
-    const tokenPair = oauthService.generateAccessTokenPair(user);
+    // const tokenPair = oauthService.generateAccessTokenPair(user);
+    const tokenPair = oauthService.generateAccessTokenPair({ ...user });
 
-    await service.createOAuthTokenPair({ ...tokenPair, userId: user._id });
+    await service.createOAuthTokenPair({ ...tokenPair, user: user._id });
 
     // await service.createOAuthTokenPair({
     // accessToken: tokenPair.accessToken,
@@ -61,6 +58,40 @@ const loginUser = async (req, res, next) => {
   }
 };
 
+const logoutUser = async (req, res, next) => {
+  try {
+    // logout from one device
+    const accessToken = req.get('Authorization');
+    await service.deleteOneUserByParams({ accessToken });
+
+    // logout from all devices
+    // await service.deleteManyUsersByParams({ user: req.user._id });
+
+    res.status(NO_CONTENT).json("logged out");
+  } catch (e) {
+    next(e);
+  }
+};
+
+const refreshToken = async (req, res, next) => {
+  try {
+    const user = req.user;
+
+    const refreshToken = req.get("Authorization");
+
+    await service.deleteOneUserByParams({ refreshToken });
+
+    const tokenPair = oauthService.generateAccessTokenPair({ ...user });
+
+    await service.createOAuthTokenPair({ ...tokenPair, user: user._id });
+    res.json({ ...tokenPair, user });
+  } catch (e) {
+    next(e);
+  }
+};
+
 module.exports = {
   loginUser,
+  logoutUser,
+  refreshToken
 };

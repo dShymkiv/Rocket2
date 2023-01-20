@@ -3,6 +3,7 @@ const router = require('express').Router();
 const controller = require('./users.controller');
 const mdlwr = require('./user.middlewares');
 const authMdlwr = require('../auth/auth.middlewares');
+const commonMdlwr = require('../../middlewares/common.middlewares');
 const { validate } = require('../mainValidateFunction');
 const schema = require('./user.shemas');
 
@@ -13,8 +14,14 @@ router.post('/',
   controller.createUser
 );
 
+router.get('/profile',
+  authMdlwr.validateAccessToken,
+  controller.getUserProfile
+);
+
 router.use('/:userId',
   validate(schema.userIdParamSchema),
+  commonMdlwr.objectIdValidator('userId'),
   mdlwr.getUserDynamically('userId', 'params', '_id'),
 );
 
@@ -26,7 +33,5 @@ router.put(
   controller.updateUserById
 );
 router.delete('/:userId', controller.deleteUser);
-
-router.get('/profile',authMdlwr.validateAccessTokenforUserProfile, controller.getUserProfile);
 
 module.exports = router;
