@@ -1,17 +1,18 @@
 const { Unauthorized } = require('../../errors/ApiError');
 const oauthService = require('../../services/OAuth.service');
 const service = require('./auth.service');
+const config = require('../../configs/constants');
 
 const validateAccessToken = async (req, res, next) => {
   try {
     // for getting token from headers use .get()
-    const accessToken = req.get('Authorization');
+    const accessToken = req.get(config.AUTHORIZATION);
 
     if (!accessToken) {
       throw new Unauthorized('No token');
     }
 
-    oauthService.validateToken(accessToken);
+    oauthService.validateToken(accessToken, 'accessToken');
 
     const tokenWithUser = await service.getUserByParams({ accessToken });
 
@@ -29,13 +30,13 @@ const validateAccessToken = async (req, res, next) => {
 const validateRefreshToken = async (req, res, next) => {
   try {
     // for getting token from headers use .get()
-    const refreshToken = req.get('Authorization');
+    const refreshToken = req.get(config.AUTHORIZATION);
 
     if (!refreshToken) {
       throw new Unauthorized('No token');
     }
 
-    oauthService.validateToken(refreshToken);
+    oauthService.validateToken(refreshToken, 'refreshToken');
 
     const tokenWithUser = await service.getUserByParams({ refreshToken });
 

@@ -42,7 +42,8 @@ function _notFoundError(req, res, next) {
 }
 
 // eslint-disable-next-line no-unused-vars
-function mainErrorHandler(err, req, res, next) {
+function mainErrorHandler(err, req, res, _) {
+  console.log(err);
   res
     .status(err.status || SERVER_ERROR)
     .json({
