@@ -5,7 +5,7 @@ const config = require('../../configs/constants');
 
 const validateAccessToken = async (req, res, next) => {
   try {
-    // for getting token from headers use .get()
+    // for getting token from headers
     const accessToken = req.get(config.AUTHORIZATION);
 
     if (!accessToken) {
@@ -29,7 +29,7 @@ const validateAccessToken = async (req, res, next) => {
 
 const validateRefreshToken = async (req, res, next) => {
   try {
-    // for getting token from headers use .get()
+    // for getting token from headers
     const refreshToken = req.get(config.AUTHORIZATION);
 
     if (!refreshToken) {

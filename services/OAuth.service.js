@@ -31,7 +31,6 @@ const validateToken = (token = '', tokenType = "accessToken") => {
     return jwt.verify(token, tokenType);
   } catch (e) {
     throw new Unauthorized(e.message || 'Invalid token');
-    // for not valid token throw only 401 Error -> UNAUTHORIZED
   }
 };
 

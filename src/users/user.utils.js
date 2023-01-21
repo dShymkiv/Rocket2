@@ -26,7 +26,6 @@ const buildFilterQuery = (query = {}) => {
       { firstName: { $regex: query.searchNameOrEmail, $options: 'i' } },
       { lastName: { $regex: query.searchNameOrEmail, $options: 'i' } },
       { email: { $regex: query.searchNameOrEmail, $options: 'i' } },
-      // i = ignore register   /`${query.searchNameOrEmail}`/i - will not work
     ];
   }
 

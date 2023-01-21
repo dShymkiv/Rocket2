@@ -13,7 +13,6 @@ const UserSchema = new Schema({
   age: { type: Number },
   role: { type: String, enum: Object.values(rolesEnum), default: rolesEnum.USER },
   password: { type: String, require: true, min: 8, default: "" }
-  // password: { type: String, require: true, min: 8, default: "", select: false }
 },
 {
   timestamps: true,

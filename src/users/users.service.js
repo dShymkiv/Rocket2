@@ -42,9 +42,6 @@ const getUsers = async (query = {}) => {
  */
 const findUserByParams = (searchObj) => {
   return User.findOne(searchObj).select('+password');
-
-  // return User.findOne(searchObj).select('_id'); // _id always selected;
-  // .select('firstName age email'); selected fields add with spaces => return _id, firstName, age, email
 };
 
 /**
@@ -76,7 +73,6 @@ const updateUser = async (user, fieldsToChange) => {
   user.firstName = fieldsToChange.firstName?.length ? fieldsToChange.firstName : user.firstName;
   user.lastName = fieldsToChange.lastName?.length ? fieldsToChange.lastName : user.lastName;
   user.age = fieldsToChange.age ? fieldsToChange.age : user.age;
-  // if fieldsToChange.user.lastName = "" => return user.lastName without changes
   user.password = fieldsToChange.password ? fieldsToChange.password : user.password;
 
 
