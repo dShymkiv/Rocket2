@@ -15,7 +15,7 @@ router.post('/',
 );
 
 router.get('/profile',
-  authMdlwr.validateAccessToken,
+  authMdlwr.validateToken(),
   controller.getUserProfile
 );
 

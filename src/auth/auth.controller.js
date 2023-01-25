@@ -1,6 +1,6 @@
 const config = require('../../configs/constants');
 const service = require('./auth.service');
-const oauthService = require('../../services/OAuth.service');
+const { oauthService } = require('../../services');
 const { NO_CONTENT } = require('../../errors/error.codes');
 
 const loginUser = async (req, res, next) => {

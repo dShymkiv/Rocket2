@@ -7,9 +7,7 @@ const getErrorMessage = (req, schema) => {
     console.log(validationResult);
 
     if (validationResult.error) {
-      errorMessage += validationResult.error.details
-        ? validationResult.error.details.map(details => details.message).join('. ')
-        : validationResult.error.message + '.';
+      errorMessage = errorMessage.concat(validationResult.error.details);
     }
 
     req[key] = validationResult.value;

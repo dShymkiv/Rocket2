@@ -41,7 +41,7 @@ const getUsers = async (query = {}) => {
  * @returns {Promise<User>}
  */
 const findUserByParams = (searchObj) => {
-  return User.findOne(searchObj).select('+password');
+  return User.findOne(searchObj);
 };
 
 /**

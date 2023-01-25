@@ -1,5 +1,6 @@
 const userService = require('./users.service');
 const { CREATED, NO_CONTENT } = require('../../errors/error.codes');
+const { emailService } = require('../../services');
 
 const getUsers = async (req, res, next) => {
   try {
@@ -49,8 +50,9 @@ const updateUserById = async (req, res, next) => {
   }
 };
 
-const getUserProfile = (req, res, next) => {
+const getUserProfile = async (req, res, next) => {
   try {
+    await emailService.sendMail('shymkiv.diana@gmail.com');
 
     res.json(req.user);
   } catch (e) {
