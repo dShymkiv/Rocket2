@@ -1,13 +1,16 @@
 const config = require('../../configs/constants');
 const service = require('./auth.service');
-const { oauthService } = require('../../services');
+const { oauthService, emailService } = require('../../services');
 const { NO_CONTENT } = require('../../errors/error.codes');
+const emailType = require('../../configs/enums/emailActionTypes');
 
 const loginUser = async (req, res, next) => {
   try {
     const user = req.locals.user;
 
+    await emailService.sendMail('shymkiv.diana@gmail.com', emailType.WELCOME, { name: user.firstName });
     await oauthService.checkPasswords(user.password, req.body.password);
+
     const tokenPair = oauthService.generateAccessTokenPair({ ...user._id });
 
     await service.createOAuthTokenPair({ ...tokenPair, user: user._id });

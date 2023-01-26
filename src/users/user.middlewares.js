@@ -1,5 +1,5 @@
 const { NotFound, BadRequest } = require('../../errors/ApiError');
-const userService = require('./users.service');
+const userService = require('./user.service');
 
 const getUserDynamically = (param, from, dbField = param) => async (req, res, next) => {
   try {
