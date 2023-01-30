@@ -8,5 +8,7 @@ module.exports = {
   NO_REPLY_EMAIL: process.env.NO_REPLY_EMAIL,
   NO_REPLY_EMAIL_PASSWORD: process.env.NO_REPLY_EMAIL_PASSWORD,
 
-  FRONTEND_URL: process.env.FRONTEND_URL || ""
+  FRONTEND_URL: process.env.FRONTEND_URL || "",
+
+  SENDGRID_API_KEY: process.env.SENDGRID_KEY
 };
