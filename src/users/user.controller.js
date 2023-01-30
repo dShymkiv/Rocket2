@@ -1,4 +1,5 @@
 const userService = require('./user.service');
+const User = require('../../db/User');
 const { CREATED, NO_CONTENT } = require('../../errors/error.codes');
 const { emailService } = require('../../services');
 const emailType = require('../../configs/enums/emailActionTypes');
@@ -53,7 +54,13 @@ const updateUserById = async (req, res, next) => {
 
 const getUserProfile = async (req, res, next) => {
   try {
-    await emailService.sendMail('shymkiv.diana@gmail.com', emailType.WELCOME);
+    const emailContext = {
+      name: req.user.firstName,
+      users: await User.find().lean(),
+      condition: false,
+    };
+
+    await emailService.sendMail('shymkiv.diana@gmail.com', emailType.WELCOME, emailContext );
 
     res.json(req.user);
   } catch (e) {

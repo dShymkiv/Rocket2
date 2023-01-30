@@ -1,35 +1,22 @@
 const nodemailer = require('nodemailer');
-const EmailTemplate = require('email-templates');
+const hbs = require('nodemailer-express-handlebars');
 const path = require('node:path');
 
 const config = require('../configs/config');
 const templatesInfo = require('../emailTemplates');
 const { ServerError } = require('../errors/ApiError');
 
-const sendMail = async (recipientEmail, emailType, locals = {}) => {
-  // default value works only with undefined, doesn't work with null
-  const templateParser = new EmailTemplate({
-    views: {
-      root: path.join(global.rootPath, 'emailTemplates')
-    },
-  });
-
+const sendMail = (recipientEmail, emailType, context = {}) => {
+  context = context || {};
   const templateConfig =templatesInfo[emailType];
 
   if (!templateConfig) {
     throw new ServerError('Wrong template name');
   }
 
-  Object.assign(locals || {}, { URL: config.FRONTEND_URL });
-  //  {} - undefined, null, ""
-
-  const html = await templateParser.render(templateConfig.templateName, locals);
+  Object.assign(context, { frontendURL: config.FRONTEND_URL });
 
   const transporter = nodemailer.createTransport({
-    // FOR NOT @gmail.com
-    // host: "smtp.ethereal.email",
-    // port: 587,
-    // secure: false, // true for 465, false for other ports
     service: 'gmail',
     auth: {
       user: config.NO_REPLY_EMAIL, // generated ethereal user
@@ -37,11 +24,25 @@ const sendMail = async (recipientEmail, emailType, locals = {}) => {
     },
   });
 
+  const options = {
+    extName: '.hbs',
+    viewPath: path.join(global.rootPath, 'emailTemplates', 'views'),
+    viewEngine: {
+      defaultLayout: 'main',
+      layoutsDir: path.join(global.rootPath, 'emailTemplates', 'layouts'),
+      partialsDir: path.join(global.rootPath, 'emailTemplates', 'partials'),
+      extname: '.hbs'
+    }
+  };
+
+  transporter.use('compile', hbs(options));
+
   return transporter.sendMail({
     from: 'No reply',
     to: recipientEmail,
     subject: templateConfig.subject,
-    html
+    template: templateConfig.templateName,
+    context,
   });
 };
 
