@@ -29,7 +29,7 @@ router.get('/:userId', controller.getUserById);
 router.put(
   '/:userId',
   validate(schema.updateUserSchema),
-  mdlwr.checkIsUserExistsDynamically('email', 'body'),
+  mdlwr.getUserDynamically('email', 'body'),
   controller.updateUserById
 );
 router.delete('/:userId', controller.deleteUser);

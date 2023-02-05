@@ -2,7 +2,7 @@ const userService = require('./user.service');
 const User = require('../../db/User');
 const { CREATED, NO_CONTENT } = require('../../errors/error.codes');
 const { emailService } = require('../../services');
-const emailType = require('../../configs/enums/emailActionTypes');
+const emailType = require('../../configs/enums/emailActionTypes.enum');
 
 const getUsers = async (req, res, next) => {
   try {
@@ -44,7 +44,7 @@ const deleteUser = async (req, res, next) => {
 
 const updateUserById = async (req, res, next) => {
   try {
-    const updatedUser = await userService.updateUser(req.user, req.body);
+    const updatedUser = await userService.updateUser(req.locals.user._id, req.body);
 
     res.json(updatedUser);
   } catch (e) {
@@ -60,7 +60,7 @@ const getUserProfile = async (req, res, next) => {
       condition: false,
     };
 
-    await emailService.sendMail('shymkiv.diana@gmail.com', emailType.WELCOME, emailContext );
+    await emailService.sendMail(req.user.email, emailType.WELCOME, emailContext );
 
     res.json(req.user);
   } catch (e) {

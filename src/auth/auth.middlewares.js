@@ -5,6 +5,8 @@ const config = require('../../configs/constants');
 
 const validateToken = (tokenType = config.ACCESS_TOKEN) => async (req, res, next) => {
   try {
+    let tokenWithUser;
+    const oauthTokens = [config.ACCESS_TOKEN, config.REFRESH_TOKEN];
     // for getting token from headers
     const token = req.get(config.AUTHORIZATION);
 
@@ -14,13 +16,19 @@ const validateToken = (tokenType = config.ACCESS_TOKEN) => async (req, res, next
 
     await oauthService.validateToken(token, tokenType);
 
-    const tokenWithUser = await service.getUserByParams({ [tokenType]: token });
+    if (!oauthTokens.includes(tokenType)) {
+      tokenWithUser = await service.getActionTokenByParams({ [tokenType]: token });
+      await service.deleteActionTokenByParams({ token });
+    } else {
+      tokenWithUser = await service.getOAuthTokenByParams({ [tokenType]: token });
+    }
 
     if (!tokenWithUser) {
       throw new Unauthorized('Invalid token');
     }
 
     req.user = tokenWithUser.user;
+
     next();
   } catch (e) {
     next(e);

@@ -4,7 +4,6 @@ const getErrorMessage = (req, schema) => {
 
   for (const key of keys) {
     const validationResult = schema[key].validate(req[key]);
-    console.log(validationResult);
 
     if (validationResult.error) {
       errorMessage = errorMessage.concat(validationResult.error.details);
