@@ -41,7 +41,7 @@ const getUsers = async (query = {}) => {
  * @returns {Promise<User>}
  */
 const findUserByParams = (searchObj) => {
-  return User.findOne(searchObj).select('+password');
+  return User.findOne(searchObj);
 };
 
 /**
@@ -65,20 +65,14 @@ const deleteUser = (userId) => {
 
 /**
  *
- * @param user {Object}
- * @param fieldsToChange {Object}
- * @returns {Promise<Partial<User>>}
+ * @param userId {String}
+ * @param fieldsToChange {Partial<User}
+ * @returns {Promise<User>}
  */
-const updateUser = async (user, fieldsToChange) => {
-  user.firstName = fieldsToChange.firstName?.length ? fieldsToChange.firstName : user.firstName;
-  user.lastName = fieldsToChange.lastName?.length ? fieldsToChange.lastName : user.lastName;
-  user.age = fieldsToChange.age ? fieldsToChange.age : user.age;
-  user.password = fieldsToChange.password ? fieldsToChange.password : user.password;
+const updateUser = async (userId, fieldsToChange) => {
+  await User.findOneAndUpdate(userId, fieldsToChange);
 
-
-  await User.findByIdAndUpdate(user._id, user);
-
-  return findUserByParams({ _id: user._id} );
+  return findUserByParams({ _id: userId} );
 };
 
 module.exports = {

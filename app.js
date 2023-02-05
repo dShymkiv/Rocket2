@@ -5,9 +5,10 @@ const path = require('node:path');
 require('dotenv').config({
   path: path.join(__dirname, 'env', `.env.${process.env.NODE_ENV || 'local'}`)
 }); // app.js doesn't see .env.local - they must be on the same level or need to write the path to .env.local
+global.rootPath = __dirname;
 
 const configs = require('./configs/config');
-const router = require('./src/api.router');
+const router = require('./api/api.router');
 const { SERVER_ERROR } = require('./errors/error.codes');
 const { NotFound } = require('./errors/ApiError');
 

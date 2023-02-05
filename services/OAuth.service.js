@@ -1,8 +1,9 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-const { BadRequest, Unauthorized } = require('../errors/ApiError');
+const { BadRequest, Unauthorized, ServerError } = require('../errors/ApiError');
 const config = require('../configs/config');
+const { FORGOT_PASSWORD_TOKEN, CONFIRM_ACCOUNT_TOKEN } = require('../configs/enums/actionTokenTypes.enum');
 
 const hashPassword = (password) => bcrypt.hash(password, 10);
 
@@ -15,8 +16,8 @@ const checkPasswords = async (hash, password) => {
 };
 
 const generateAccessTokenPair = (encodeData = {}) => {
-  const accessToken = jwt.sign(encodeData, config.ACCESS_TOKEN_SECRET, {expiresIn: '15m'});
-  const refreshToken = jwt.sign(encodeData, config.REFRESH_TOKEN_SECRET, {expiresIn: '30d'});
+  const accessToken = jwt.sign(encodeData, config.ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
+  const refreshToken = jwt.sign(encodeData, config.REFRESH_TOKEN_SECRET, { expiresIn: '30d' });
 
   return {
     accessToken,
@@ -24,9 +25,49 @@ const generateAccessTokenPair = (encodeData = {}) => {
   };
 };
 
-const validateToken = (token = '', tokenType = "accessToken") => {
+const generateActionToken = (actionType, encodeData = {}) => {
+  let expiresIn = '24h';
+  let secretTokenWord = '';
+
+  switch (actionType) {
+    case FORGOT_PASSWORD_TOKEN:
+      secretTokenWord = FORGOT_PASSWORD_TOKEN;
+      break;
+
+    case CONFIRM_ACCOUNT_TOKEN:
+      expiresIn = '12h';
+      secretTokenWord = CONFIRM_ACCOUNT_TOKEN;
+      break;
+
+    default:
+      throw new ServerError('Wrong action token');
+  }
+
+  return jwt.sign(encodeData, secretTokenWord, { expiresIn });
+};
+
+const validateToken = (token = '', tokenType = 'accessToken') => {
   try {
-    tokenType = tokenType === "accessToken" ? config.ACCESS_TOKEN_SECRET : config.REFRESH_TOKEN_SECRET;
+    switch (tokenType) {
+      case 'accessToken':
+        tokenType = config.ACCESS_TOKEN_SECRET;
+        break;
+
+      case 'refreshToken':
+        tokenType = config.REFRESH_TOKEN_SECRET;
+        break;
+
+      case 'forgotPasswordToken':
+        tokenType = FORGOT_PASSWORD_TOKEN;
+        break;
+
+      case 'confirmAccountToken':
+        tokenType = CONFIRM_ACCOUNT_TOKEN;
+        break;
+
+      default:
+        throw new BadRequest('Wrong token type');
+    }
 
     return jwt.verify(token, tokenType);
   } catch (e) {
@@ -38,5 +79,6 @@ module.exports = {
   hashPassword,
   checkPasswords,
   generateAccessTokenPair,
+  generateActionToken,
   validateToken,
 };
