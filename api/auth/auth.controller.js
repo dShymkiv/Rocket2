@@ -1,16 +1,21 @@
 const emailType = require('../../configs/enums/emailActionTypes.enum');
-const actionTokenType = require('../../configs/enums/actionTokenTypes.enum');
+const userStatus = require('../../configs/enums/userStatuses.enum');
 const config = require('../../configs/constants');
-const { FRONTEND_URL } = require('../../configs/config');
 const { NO_CONTENT } = require('../../errors/error.codes');
 
 const service = require('./auth.service');
 const userService = require('../users/user.service');
 const { oauthService, emailService } = require('../../services');
+const { ACTIVE, PENDING } = require('../../configs/enums/userStatuses.enum');
+const { Unauthorized } = require('../../errors/ApiError');
 
 const loginUser = async (req, res, next) => {
   try {
     const user = req.locals.user;
+
+    if (user.status !== ACTIVE) {
+      throw new Unauthorized(`Your account ${ user.status === PENDING ? 'is not confirmed' : 'is blocked' }`);
+    }
 
     await emailService.sendMail(user.email, emailType.WELCOME, { name: user.firstName });
     await oauthService.checkPasswords(user.password, req.body.password);
@@ -43,28 +48,11 @@ const logoutUser = async (req, res, next) => {
   }
 };
 
-// send email for forgot password
-const sendForgotPasswordEmail = async (req, res, next) => {
+const sendActionEmail = (actionTokenType = '', emailType) => async (req, res, next) => {
   try {
-    const user = req.locals.user;
+    await service.sendActionEmail(actionTokenType, emailType, req.locals.user);
 
-    const forgotPasswordToken = oauthService.generateActionToken(
-      actionTokenType.FORGOT_PASSWORD_TOKEN,
-      { email: user.email }
-    );
-
-    //save action token to DB
-    await service.createActionToken({
-      token: forgotPasswordToken,
-      actionType: actionTokenType.FORGOT_PASSWORD_TOKEN,
-      user: user._id
-    });
-
-    const forgotPassURL = `${FRONTEND_URL}/forgot-password?token=${forgotPasswordToken}`;
-
-    await emailService.sendMail(user.email, emailType.FORGOT_PASSWORD, { forgotPassURL });
-
-    res.json("ok");
+    res.json("Email sent");
   } catch (e) {
     next(e);
   }
@@ -80,7 +68,20 @@ const setForgotPasswordEmail = async (req, res, next) => {
     // log out from all devices
     await service.deleteManyUsersByParams({ user: userId });
 
-    res.json("ok");
+    res.json('Password successfully updated');
+  } catch (e) {
+    next(e);
+  }
+};
+
+const confirmEmail = async (req, res, next) => {
+  try {
+    const { _id: userId } = req.user;
+    // const status = userStatus.ACTIVE;
+
+    await userService.updateUser(userId, { status: userStatus.ACTIVE });
+
+    res.json('Email is confirmed');
   } catch (e) {
     next(e);
   }
@@ -107,6 +108,7 @@ module.exports = {
   loginUser,
   logoutUser,
   refreshToken,
-  sendForgotPasswordEmail,
-  setForgotPasswordEmail
+  sendActionEmail,
+  setForgotPasswordEmail,
+  confirmEmail
 };

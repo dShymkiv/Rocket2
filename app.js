@@ -8,7 +8,7 @@ require('dotenv').config({
 global.rootPath = __dirname;
 
 const configs = require('./configs/config');
-const router = require('./src/api.router');
+const router = require('./api/api.router');
 const { SERVER_ERROR } = require('./errors/error.codes');
 const { NotFound } = require('./errors/ApiError');
 

@@ -3,6 +3,8 @@ const User = require('../../db/User');
 const { CREATED, NO_CONTENT } = require('../../errors/error.codes');
 const { emailService } = require('../../services');
 const emailType = require('../../configs/enums/emailActionTypes.enum');
+const authService = require('../auth/auth.service');
+const actionTokenType = require('../../configs/enums/actionTokenTypes.enum');
 
 const getUsers = async (req, res, next) => {
   try {
@@ -25,6 +27,9 @@ const getUserById = (req, res, next) => {
 const createUser = async (req, res, next) => {
   try {
     const newUser = await userService.createUser(req.body);
+
+    //send confirmation email
+    await authService.sendActionEmail(actionTokenType.CONFIRM_ACCOUNT_TOKEN, emailType.CONFIRM_EMAIL, newUser);
 
     res.status(CREATED).json(newUser);
   } catch (e) {

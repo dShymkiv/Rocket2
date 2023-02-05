@@ -6,15 +6,17 @@ const authMdlwr = require('../auth/auth.middlewares');
 const commonMdlwr = require('../../middlewares/common.middlewares');
 const { validate } = require('../mainValidateFunction');
 const schema = require('./user.shemas');
+const authSchema = require('../auth/auth.shemas');
 
 router.get('/', validate(schema.getAllUsersSchema), controller.getUsers);
 router.post('/',
   validate(schema.createUserSchema),
   mdlwr.checkIsUserExistsDynamically('email', 'body'),
-  controller.createUser
+  controller.createUser,
 );
 
 router.get('/profile',
+  validate(authSchema.headersSchema),
   authMdlwr.validateToken(),
   controller.getUserProfile
 );
