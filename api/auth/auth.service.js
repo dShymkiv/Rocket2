@@ -8,7 +8,7 @@ const createOAuthTokenPair = (tokenData) => {
 };
 
 const getOAuthTokenByParams = (searchedData = {}) => {
-  return OAuth.findOne(searchedData).populate('user');
+  return OAuth.findOne(searchedData);
 };
 
 const deleteOneUserByParams = (deleteData = {}) => {
@@ -29,7 +29,7 @@ const deleteActionTokenByParams = (deleteData) => {
 };
 
 const getActionTokenByParams = (searchedData = {}) => {
-  return ActionToken.findOne(searchedData).populate('user');
+  return ActionToken.findOne(searchedData);
 };
 
 const sendActionEmail = async (actionTokenType = '', emailType, user) => {

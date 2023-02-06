@@ -65,6 +65,9 @@ const getUserProfile = async (req, res, next) => {
       condition: false,
     };
 
+    User.myFirstStatic();
+    req.user.myFirstMethod();
+
     await emailService.sendMail(req.user.email, emailType.WELCOME, emailContext );
 
     res.json(req.user);

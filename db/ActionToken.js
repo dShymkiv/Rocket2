@@ -15,6 +15,10 @@ const ActionTokenSchema = new mongoose.Schema({
   toObject: { virtuals: true }
 });
 
+ActionTokenSchema.pre('findOne', function() {
+  this.populate('user');
+});
+
 module.exports = mongoose.model(ACTION_TOKEN, ActionTokenSchema);
 
 // when you have of collection which contains two+ words write it with underscore

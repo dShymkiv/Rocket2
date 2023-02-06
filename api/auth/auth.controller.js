@@ -18,8 +18,9 @@ const loginUser = async (req, res, next) => {
     }
 
     await emailService.sendMail(user.email, emailType.WELCOME, { name: user.firstName });
-    await oauthService.checkPasswords(user.password, req.body.password);
+    //await oauthService.checkPasswords(user.password, req.body.password);
 
+    await user.checkIsPasswordSame(req.user.password);
     const tokenPair = oauthService.generateAccessTokenPair({ ...user._id });
 
     await service.createOAuthTokenPair({ ...tokenPair, user: user._id });

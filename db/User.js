@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const rolesEnum = require('../configs/enums/roles.enum');
 const userStatus = require('../configs/enums/userStatuses.enum');
 const { USER } = require('../configs/enums/dataBaseCollections.enum');
+const { oauthService } = require('../services');
 // const UserStatus = require('./UserStatus');
 
 const sequreFields = ['password', 'status'];
@@ -39,7 +40,32 @@ const UserSchema = new mongoose.Schema({
       return ret;
     }
   }
-}
-);
+});
+
+UserSchema.virtual('fullName').get(function() {
+  return `${this.firstName} ${this.lastName}`.trim();
+});
+
+UserSchema.statics = { //for schema
+  myFirstStatic() {
+    console.log(this); // this => schema ( User )
+  },
+
+  async saveUserWithHashedPassword(userObj) {
+    const hashPassword = await oauthService.hashPassword(userObj.password);
+
+    return this.create({ ...userObj, password: hashPassword });
+  }
+};
+
+UserSchema.methods = { // for document
+  myFirstMethod() {
+    console.log(this); // this => document ( req.user )
+  },
+
+  async checkIsPasswordSame(checkPassword) {
+    await oauthService.checkPasswords(this.password, checkPassword);
+  }
+};
 
 module.exports = mongoose.model(USER, UserSchema);

@@ -49,10 +49,10 @@ const findUserByParams = (searchObj) => {
  * @param user {Object}
  * @returns {Promise<User>}
  */
-const createUser = async (user) => {
-  const hashPassword = await oauthService.hashPassword(user.password);
-
-  return User.create({ ...user, password: hashPassword });
+const createUser = (user) => {
+  return User.saveUserWithHashedPassword(user);
+  // const hashPassword = await oauthService.hashPassword(user.password);
+  // return User.create({ ...user, password: hashPassword });
 };
 
 /**
