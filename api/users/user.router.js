@@ -36,6 +36,6 @@ router.put(
 );
 router.delete('/:userId', controller.deleteUser);
 router.post('/:userId/avatar', mdlwr.checkUserAvatar, controller.uploadUserAvatar);
-router.patch('/:userId/avatar/:avatarId', controller.updateMainUserAvatar);
+router.patch('/:userId/avatar/:avatarId', validate(schema.avatarIdParamSchema), controller.updateMainUserAvatar);
 
 module.exports = router;

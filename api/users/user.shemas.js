@@ -51,6 +51,8 @@ const updateUserSchema = {
   }),
 };
 
+
+// TODO dynamic params joi schema
 const userIdParamSchema = {
   params: Joi.object()
     .keys({
@@ -59,9 +61,18 @@ const userIdParamSchema = {
     .required(),
 };
 
+const avatarIdParamSchema = {
+  params: Joi.object()
+    .keys({
+      avatarId: Joi.string().alphanum().regex(regExp.OBJECT_ID).required(),
+    })
+    .required(),
+};
+
 module.exports = {
   getAllUsersSchema,
   createUserSchema,
   updateUserSchema,
-  userIdParamSchema
+  userIdParamSchema,
+  avatarIdParamSchema
 };
