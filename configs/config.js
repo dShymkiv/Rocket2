@@ -8,5 +8,10 @@ module.exports = {
   NO_REPLY_EMAIL: process.env.NO_REPLY_EMAIL,
   NO_REPLY_EMAIL_PASSWORD: process.env.NO_REPLY_EMAIL_PASSWORD,
 
-  FRONTEND_URL: process.env.FRONTEND_URL || ""
+  FRONTEND_URL: process.env.FRONTEND_URL || "",
+
+  S3_REGION: process.env.S3_REGION,
+  S3_BUCKET: process.env.S3_BUCKET,
+  AWS_ACCESS_KEY: process.env.AWS_ACCESS_KEY,
+  AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
 };

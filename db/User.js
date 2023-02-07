@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 const rolesEnum = require('../configs/enums/roles.enum');
 const userStatus = require('../configs/enums/userStatuses.enum');
 const { USER } = require('../configs/enums/dataBaseCollections.enum');
-// const UserStatus = require('./UserStatus');
 
 const sequreFields = ['password', 'status'];
 
@@ -14,7 +13,7 @@ const UserSchema = new mongoose.Schema({
   age: { type: Number },
   role: { type: String, enum: Object.values(rolesEnum), default: rolesEnum.USER },
   password: { type: String, require: true, min: 8, default: '' },
-  status: { type: String, required: true, trim: true, default: userStatus.PENDING }
+  status: { type: String, required: true, trim: true, default: userStatus.PENDING },
 },
 {
   timestamps: true,
@@ -39,7 +38,10 @@ const UserSchema = new mongoose.Schema({
       return ret;
     }
   }
-}
-);
+});
+
+UserSchema.virtual("fullName").get(function() {
+  return `${this.firstName} ${this.lastName}`.trim();
+});
 
 module.exports = mongoose.model(USER, UserSchema);

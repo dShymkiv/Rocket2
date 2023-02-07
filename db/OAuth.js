@@ -15,4 +15,8 @@ const OAuthSchema = new mongoose.Schema({
   toObject: { virtuals: true }
 });
 
+OAuthSchema.pre(/^find/, function() {
+  this.populate('user');
+});
+
 module.exports = mongoose.model(OAUTH, OAuthSchema);

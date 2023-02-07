@@ -3,4 +3,5 @@ module.exports = {
   OAUTH: 'OAuth',
   ACTION_TOKEN: 'Action_Token',
   USER_STATUS: 'User_Status',
+  AVATAR: 'Avatar',
 };

@@ -1,6 +1,9 @@
 const User = require('../../db/User');
+const Avatar = require('../../db/Avatar');
 const { buildFilterQuery, buildSortQuery } = require('./user.utils');
 const oauthService = require('../../services/OAuth.service');
+const { UPDATED_AT } = require('../../configs/enums/sortFields.enum');
+const { ASC, DESC } = require('../../configs/enums/sortOrder.enum');
 
 /**
  * JSDoc
@@ -44,6 +47,10 @@ const findUserByParams = (searchObj) => {
   return User.findOne(searchObj);
 };
 
+const findMainUserAvatar = (searchObj) => {
+  return Avatar.findOne({ user: searchObj }).sort({ ['isMain']: DESC } );
+};
+
 /**
  *
  * @param user {Object}
@@ -66,7 +73,7 @@ const deleteUser = (userId) => {
 /**
  *
  * @param userId {String}
- * @param fieldsToChange {Partial<User}
+ * @param fieldsToChange {Partial<User>}
  * @returns {Promise<User>}
  */
 const updateUser = async (userId, fieldsToChange) => {
@@ -75,10 +82,47 @@ const updateUser = async (userId, fieldsToChange) => {
   return findUserByParams({ _id: userId} );
 };
 
+/**
+ *
+ * @param userField {Object}
+ * @returns {Promise<Avatar>}
+ */
+const findUserAvatarsByParams = (userField) => {
+  return Avatar.find({ user: userField }).sort({ [UPDATED_AT]: ASC }).select("avatarURL");
+};
+
+const updateMainAvatarByParams = (filter, update) => {
+  return Avatar.findOneAndUpdate(filter, update);
+};
+
+/**
+ *
+ * @param avatar
+ * @param userId
+ * @returns {Promise<Avatar>}
+ */
+const saveUserAvatar = async (avatar, userId) => {
+  await updateMainAvatarByParams({ isMain: 1 }, { isMain: 0 });
+
+  return Avatar.create({ avatarURL: avatar, user: userId });
+};
+
+const updateMainAvatar = async (avatar) => {
+  await updateMainAvatarByParams({ isMain: 1 }, { isMain: 0 });
+
+  return updateMainAvatarByParams({ _id: avatar }, { isMain: 1 });
+};
+
+
 module.exports = {
   getUsers,
   createUser,
   deleteUser,
   updateUser,
   findUserByParams,
+  findUserAvatarsByParams,
+  saveUserAvatar,
+  updateMainAvatarByParams,
+  updateMainAvatar,
+  findMainUserAvatar
 };

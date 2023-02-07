@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const path = require('node:path');
+const fileUpload = require('express-fileupload');
 
 require('dotenv').config({
   path: path.join(__dirname, 'env', `.env.${process.env.NODE_ENV || 'local'}`)
@@ -17,6 +18,10 @@ mongoose.set('debug', true);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use(fileUpload({
+  limits: { fileSize: 200 * 1024 * 1024 },
+}));
 
 app.use('/', router);
 app.use('*', _notFoundError);

@@ -1,10 +1,11 @@
 const userService = require('./user.service');
 const User = require('../../db/User');
 const { CREATED, NO_CONTENT } = require('../../errors/error.codes');
-const { emailService } = require('../../services');
+const { emailService, fileS3Service } = require('../../services');
 const emailType = require('../../configs/enums/emailActionTypes.enum');
 const authService = require('../auth/auth.service');
 const actionTokenType = require('../../configs/enums/actionTokenTypes.enum');
+const { ServerError } = require('../../errors/ApiError');
 
 const getUsers = async (req, res, next) => {
   try {
@@ -65,9 +66,37 @@ const getUserProfile = async (req, res, next) => {
       condition: false,
     };
 
+    const userAvatars = await userService.findUserAvatarsByParams(req.user._id);
+
     await emailService.sendMail(req.user.email, emailType.WELCOME, emailContext );
 
-    res.json(req.user);
+    res.json({ ...req.user.toObject(), userAvatars });
+  } catch (e) {
+    next(e);
+  }
+};
+
+const uploadUserAvatar = async (req, res, next) => {
+  try {
+    const data = await fileS3Service.uploadFileToS3(req.files.avatar, req.params.userId, 'user');
+
+    if (!data) {
+      throw new ServerError(`Something went wrong... Cannot upload ${req.files.avatar}`);
+    }
+
+    await userService.saveUserAvatar(data.Location, req.params.userId);
+
+    res.json(data);
+  } catch (e) {
+    next(e);
+  }
+};
+
+const updateMainUserAvatar = async (req, res, next) => {
+  try {
+    await userService.updateMainAvatar(req.params.avatarId);
+
+    res.json('updated');
   } catch (e) {
     next(e);
   }
@@ -79,5 +108,7 @@ module.exports = {
   createUser,
   deleteUser,
   updateUserById,
-  getUserProfile
+  getUserProfile,
+  uploadUserAvatar,
+  updateMainUserAvatar
 };

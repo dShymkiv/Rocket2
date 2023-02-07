@@ -35,5 +35,7 @@ router.put(
   controller.updateUserById
 );
 router.delete('/:userId', controller.deleteUser);
+router.post('/:userId/avatar', mdlwr.checkUserAvatar, controller.uploadUserAvatar);
+router.patch('/:userId/avatar/:avatarId', controller.updateMainUserAvatar);
 
 module.exports = router;
