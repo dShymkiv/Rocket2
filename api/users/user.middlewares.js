@@ -7,14 +7,10 @@ const getUserDynamically = (param, from, dbField = param) => async (req, res, ne
     const searchedField = req[from][param];
 
     const user = await userService.findUserByParams({ [dbField]: searchedField });
-    const userAvatar = await userService.findMainUserAvatar(user._id);
 
     if (!user) {
       throw new NotFound('User not found');
     }
-
-    // avatar doesn't appear
-    user.avatar = userAvatar;
 
     req.locals = { ...req.locals, user };
 

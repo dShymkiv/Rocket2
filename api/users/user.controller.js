@@ -1,5 +1,6 @@
 const userService = require('./user.service');
 const User = require('../../db/User');
+const Avatar = require('../../db/Avatar');
 const { CREATED, NO_CONTENT } = require('../../errors/error.codes');
 const { emailService, fileS3Service } = require('../../services');
 const emailType = require('../../configs/enums/emailActionTypes.enum');
@@ -17,9 +18,14 @@ const getUsers = async (req, res, next) => {
   }
 };
 
-const getUserById = (req, res, next) => {
+const getUserById = async (req, res, next) => {
   try {
-    res.json(req.locals.user);
+    const user = req.locals.user.toObject();
+    const userAvatar = await userService.findMainUserAvatar(user._id);
+
+    user.userAvatars = [userAvatar?.avatarURL];
+
+    res.json(user);
   } catch (e) {
     next(e);
   }
@@ -61,14 +67,12 @@ const updateUserById = async (req, res, next) => {
 const getUserProfile = async (req, res, next) => {
   try {
     const emailContext = {
-      name: req.user.firstName,
-      users: await User.find().lean(),
-      condition: false,
+      name: req.user.firstName, users: await User.find().lean(), condition: false,
     };
 
-    const userAvatars = await userService.findUserAvatarsByParams(req.user._id);
+    const userAvatars = await Avatar.getUserAvatars(req.user._id);
 
-    await emailService.sendMail(req.user.email, emailType.WELCOME, emailContext );
+    await emailService.sendMail(req.user.email, emailType.WELCOME, emailContext);
 
     res.json({ ...req.user.toObject(), userAvatars });
   } catch (e) {
@@ -103,12 +107,5 @@ const updateMainUserAvatar = async (req, res, next) => {
 };
 
 module.exports = {
-  getUsers,
-  getUserById,
-  createUser,
-  deleteUser,
-  updateUserById,
-  getUserProfile,
-  uploadUserAvatar,
-  updateMainUserAvatar
+  getUsers, getUserById, createUser, deleteUser, updateUserById, getUserProfile, uploadUserAvatar, updateMainUserAvatar
 };

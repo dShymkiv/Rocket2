@@ -69,6 +69,10 @@ const validateToken = (token = '', tokenType = 'accessToken') => {
         throw new BadRequest('Wrong token type');
     }
 
+    console.log(token, "token")
+    console.log(tokenType, "tokenType")
+
+
     return jwt.verify(token, tokenType);
   } catch (e) {
     throw new Unauthorized(e.message || 'Invalid token');

@@ -2,8 +2,6 @@ const User = require('../../db/User');
 const Avatar = require('../../db/Avatar');
 const { buildFilterQuery, buildSortQuery } = require('./user.utils');
 const oauthService = require('../../services/OAuth.service');
-const { UPDATED_AT } = require('../../configs/enums/sortFields.enum');
-const { ASC, DESC } = require('../../configs/enums/sortOrder.enum');
 
 /**
  * JSDoc
@@ -48,7 +46,7 @@ const findUserByParams = (searchObj) => {
 };
 
 const findMainUserAvatar = (searchObj) => {
-  return Avatar.findOne({ user: searchObj }).sort({ ['isMain']: DESC } );
+  return Avatar.findOne({ user: searchObj }).sort({ ['isMain']: 1 } );
 };
 
 /**
@@ -82,15 +80,6 @@ const updateUser = async (userId, fieldsToChange) => {
   return findUserByParams({ _id: userId} );
 };
 
-/**
- *
- * @param userField {Object}
- * @returns {Promise<Avatar>}
- */
-const findUserAvatarsByParams = (userField) => {
-  return Avatar.find({ user: userField }).sort({ [UPDATED_AT]: ASC }).select("avatarURL");
-};
-
 const updateMainAvatarByParams = (filter, update) => {
   return Avatar.findOneAndUpdate(filter, update);
 };
@@ -120,7 +109,6 @@ module.exports = {
   deleteUser,
   updateUser,
   findUserByParams,
-  findUserAvatarsByParams,
   saveUserAvatar,
   updateMainAvatarByParams,
   updateMainAvatar,
