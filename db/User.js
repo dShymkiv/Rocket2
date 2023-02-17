@@ -13,7 +13,8 @@ const UserSchema = new mongoose.Schema({
   age: { type: Number },
   role: { type: String, enum: Object.values(rolesEnum), default: rolesEnum.USER },
   password: { type: String, require: true, min: 8, default: '' },
-  status: { type: String, required: true, trim: true, default: userStatus.PENDING },
+  status: { type: String, default: "" },
+  avatar: { type: String, required: true, trim: true, default: userStatus.PENDING },
 },
 {
   timestamps: true,

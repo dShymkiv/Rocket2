@@ -82,15 +82,16 @@ const getUserProfile = async (req, res, next) => {
 
 const uploadUserAvatar = async (req, res, next) => {
   try {
-    const data = await fileS3Service.uploadFileToS3(req.files.avatar, req.params.userId, 'user');
+    const data = await fileS3Service.uploadFileToS3(req.files.avatar, req.params.userId, 'user'); // url
 
     if (!data) {
       throw new ServerError(`Something went wrong... Cannot upload ${req.files.avatar}`);
     }
 
-    await userService.saveUserAvatar(data.Location, req.params.userId);
+    await userService.saveUserAvatar(data, req.params.userId);
+    await userService.updateUser(req.params.userId, { avatar: data });
 
-    res.json(data);
+    res.json({ url: data });
   } catch (e) {
     next(e);
   }

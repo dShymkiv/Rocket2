@@ -1,6 +1,5 @@
 const AWS_S3 = require('aws-sdk/clients/s3');
 const uuid = require('uuid').v4;
-// const { nanoid } = require('nanoid');
 const path = require('node:path');
 
 const config = require('../configs/config');
@@ -13,28 +12,39 @@ const S3 = new AWS_S3({
   apiVersion: '2006-03-01'
 });
 
-function uploadFileToS3(file, itemId, itemType) {
+async function uploadFileToS3(file, itemId, itemType) {
   const Key = fileNameBuilder(file, itemId, itemType);
 
-  return S3
+  await S3
     .upload({
       Bucket: config.S3_BUCKET,
       Body: file.data, // buffer data
-      // Key: `'images/${file.name}`, // fileName
       Key, // fileName
-      ACL: 'public-read',
       ContentType: file.mimeType
     })
     .promise(); // without promise => function will be with callbacks
+
+  return `/files/private?url=${Key}`;
+  // return Key;      // more dynamically
 }
+
+function getFileFromS3(Key) {
+  return S3.getSignedUrl('getObject', { Key, Bucket: config.S3_BUCKET, Expires: 5 * 60 }); // 5m
+}
+
+function getFileBufferFromS3(Key) {
+  return S3.getObject({ Key, Bucket: config.S3_BUCKET }).promise(); // 5m
+  //                           which file, from which bucket
+}
+
 function fileNameBuilder(file, itemId, itemType) {
-  // const extension = file.name.trim('.').pop() // jpg
   const extension = path.extname(file.name); // .jpg
 
   return `${itemType}/${itemId}/${uuid()}${extension}`;
-  // return `${itemType}/${itemId}/${nanoid(4)}${extension}`;
 }
 
 module.exports = {
-  uploadFileToS3
+  uploadFileToS3,
+  getFileFromS3,
+  getFileBufferFromS3
 };
